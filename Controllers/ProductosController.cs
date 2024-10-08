@@ -31,8 +31,8 @@ namespace apiApplication.Controllers
             return await _context.Producto.ToListAsync();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Producto>> GetProducto(int id)
+        [HttpGet("{id}/favorito")]
+        public async Task<ActionResult<Producto>> GetProducto( int id)
         {
             var producto = await _context.Producto.FindAsync(id);
 
@@ -41,7 +41,13 @@ namespace apiApplication.Controllers
                 return NotFound();
             }
 
-            return producto;
+            producto.isFavorito = !producto.isFavorito;
+
+            _context.Producto.Update(producto);
+            await _context.SaveChangesAsync();
+
+            // Devolver una respuesta de éxito
+            return Ok(new { message = "Producto actualizado correctamente", producto });
         }
     }
 }
